@@ -1,10 +1,13 @@
-const API_KEY = ``; // 과제용 API_KEY
+const API_KEY = `b3890c85e6f94350bca0576090671f11`; // 과제용 API_KEY
 let newsList = []
+const menus = document.querySelectorAll(".menu-common button")
+menus.forEach(menu=>menu.addEventListener("click", (event)=>getNewsByCategory(event)))
+console.log("mmm", menus)
 const getLatestNews = async() =>{
 
-  const url = new URL(`https://noona-times-be-5ca9402f90d9.herokuapp.com/top-headlines?country=kr`) // 배포용
+  // const url = new URL(`https://noona-times-be-5ca9402f90d9.herokuapp.com/top-headlines?country=kr`) // 배포용
 
-  // const url = new URL(`https://newsapi.org/v2/top-headlines?country=us&apiKey=${API_KEY}`) // 과제용
+  const url = new URL(`https://newsapi.org/v2/top-headlines?country=us&apiKey=${API_KEY}`) // 과제용
 
   console.log("uuu", url)
   const response = await fetch(url)
@@ -14,6 +17,27 @@ const getLatestNews = async() =>{
   render()
   console.log("Ddd", newsList)
 }
+const getNewsByCategory = async (event) => {
+  const category = event.target.textContent.toLowerCase()
+  console.log("category", category)
+  const url = new URL(`https://newsapi.org/v2/top-headlines?country=us&category=${category}&apiKey=${API_KEY}`)
+  const response = await fetch(url)
+  const data = await response.json()
+  console.log("Dddd", data)
+  newsList = data.articles
+  render()
+}
+const getNewsByKeyword = async (event) => {
+  const keyword = document.getElementById("search-input").value
+  console.log("keyword", keyword)
+  const url = new URL(`https://newsapi.org/v2/top-headlines?country=us&q=${keyword}&apiKey=${API_KEY}`)
+  const response = await fetch(url)
+  const data = await response.json()
+  console.log("keyword DDdd", data)
+  newsList = data.articles
+  render()
+}
+
 const render=() =>{
   const newsHTML = newsList.map(
     (news)=>`<div class="row news">
@@ -45,6 +69,9 @@ const render=() =>{
   document.getElementById("news-board").innerHTML=newsHTML
 }
 getLatestNews()
+
+
+
 
 
 /* 모바일 사이드 메뉴 */
