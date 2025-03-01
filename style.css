@@ -85,7 +85,10 @@
   border-radius: 3px;
 }
 
-
+.pagination{
+  padding-top: 20px;
+  justify-content: center;
+}
 
 
 
