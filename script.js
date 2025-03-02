@@ -7,14 +7,14 @@ menus.forEach((menu) =>
 let url = new URL(
   `https://noona-times-be-5ca9402f90d9.herokuapp.com/top-headlines?country=kr`
 );
-let totalResults = 0
-let page = 1
-const pageSize = 10
-const groupSize = 5
+let totalResults = 0;
+let page = 1;
+const pageSize = 10;
+const groupSize = 5;
 const getNews = async () => {
   try {
-    url.searchParams.set("page", page) // &page=page
-    url.searchParams.set("pageSize", pageSize) 
+    url.searchParams.set("page", page); // &page=page
+    url.searchParams.set("pageSize", pageSize);
     const response = await fetch(url);
     const data = await response.json();
     if (response.status === 200) {
@@ -45,6 +45,7 @@ const getNewsByCategory = async (event) => {
   url = new URL(
     `https://noona-times-be-5ca9402f90d9.herokuapp.com/top-headlines?country=kr&category=${category}`
   ); // 배포용
+  page = 1;
   await getNews();
 };
 const getNewsByKeyword = async (event) => {
@@ -100,25 +101,52 @@ const errorRender = (errorMessage) => {
   document.getElementById("news-board").innerHTML = errorHTML;
 };
 const paginationRender = () => {
-  const totalPages = Math.ceil(totalResults/pageSize)
-  const pageGroup = Math.ceil(page/groupSize)
-  let lastPage = pageGroup*groupSize
-  if(lastPage>totalPages){
-    lastPage = totalPages
+  const totalPages = Math.ceil(totalResults / pageSize);
+  const pageGroup = Math.ceil(page / groupSize);
+  let lastPage = pageGroup * groupSize;
+  if (lastPage > totalPages) {
+    lastPage = totalPages;
   }
 
-  const firstPage = lastPage - (groupSize -1) <=0?1:lastPage - (groupSize -1);
+  const firstPage =
+    lastPage - (groupSize - 1) <= 0 ? 1 : lastPage - (groupSize - 1);
 
-  let paginationHTML=`<li class="page-item" onclick="MoveToPage(${page-1})"><a class="page-link"> &lt;</a></li>`
-  for(let i=firstPage;i<=lastPage;i++){
+  let paginationHTML = ``;
+  if (page == 1) {
+    paginationHTML = ``;
+  } else if (page >= 2 && page <= groupSize) {
+    paginationHTML = `
+  <li class="page-item" onclick="MoveToPage(${page - 1})"><a class="page-link">&lt;</a></li>`;
+  } else {
+    paginationHTML = `<li class="page-item" onclick="MoveToPage(1)"><a class="page-link">&lt;&lt;</a></li>
+  <li class="page-item" onclick="MoveToPage(${
+    page - 1
+  })"><a class="page-link">&lt;</a></li>`;
+  }
+
+  for (let i = firstPage; i <= lastPage; i++) {
     paginationHTML += `<li class="page-item ${
-      i===page?"active":""
-    }" onclick="MoveToPage(${i})"><a class="page-link">${i}</a></li>`
+      i === page ? "active" : ""
+    }" onclick="MoveToPage(${i})"><a class="page-link">${i}</a></li>`;
   }
-  paginationHTML += `<li class="page-item" onclick="MoveToPage(${page+1})"><a class="page-link">&gt;</a></li>`
+
+  if (page == totalPages) {
+    paginationHTML += ``;
+  } else if(page>=(totalPages-groupSize+1) && page<=(totalPages -1)){
+    paginationHTML += `<li class="page-item" onclick="MoveToPage(${page + 1
+    })"><a class="page-link">&gt;</a></li>`;
+  }
+  else{
+    paginationHTML += `
+    <li class="page-item" onclick="MoveToPage(${
+      page + 1
+    })"><a class="page-link">&gt;</a></li>
+    <li class="page-item" onclick="MoveToPage(${totalPages})"><a class="page-link">&gt;&gt;</a></li>`;
+  }
   document.querySelector(".pagination").innerHTML = paginationHTML;
 
-{/* <nav aria-label="Page navigation example">
+  {
+    /* <nav aria-label="Page navigation example">
   <ul class="pagination">
     <li class="page-item"><a class="page-link" href="#">Previous</a></li>
     <li class="page-item"><a class="page-link" href="#">1</a></li>
@@ -126,14 +154,14 @@ const paginationRender = () => {
     <li class="page-item"><a class="page-link" href="#">3</a></li>
     <li class="page-item"><a class="page-link" href="#">Next</a></li>
   </ul>
-</nav> */}
-
+</nav> */
+  }
 };
-const MoveToPage=(pageNum) => {
-  console.log("move to page", pageNum)
-  page = pageNum
-  getNews()
-}
+const MoveToPage = (pageNum) => {
+  console.log("move to page", pageNum);
+  page = pageNum;
+  getNews();
+};
 getLatestNews();
 
 /* 모바일 사이드 메뉴 */
@@ -153,4 +181,5 @@ const openSearchBox = () => {
   } else {
     inputArea.style.display = "inline";
   }
+
 };

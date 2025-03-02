@@ -90,6 +90,10 @@
   justify-content: center;
 }
 
+.pagination li a {
+  cursor: pointer;
+}
+
 
 
 
